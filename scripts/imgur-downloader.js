@@ -9,13 +9,13 @@ let searchCache = {timers: [], highlight: []};
 
 function updateCount() {
     let elem = document.querySelector("#hiddenCount");
-    let viewer = document.querySelector("#viewer");
+    let divs = document.querySelectorAll("#viewer > .container").length;
     let text = "Showing {0} of {1} items";
-    if (viewer.children.length > 0) {
+    if (divs > 0) {
         elem.classList.remove("hidden");
-        text = text.replace("{1}", viewer.children.length);
+        text = text.replace("{1}", divs);
         let hidden = document.querySelectorAll(".container.hidden");
-        text = text.replace("{0}", viewer.children.length - hidden.length);
+        text = text.replace("{0}", divs - hidden.length);
         elem.innerText = text;
     } else {
         elem.classList.add("hidden");
@@ -252,6 +252,9 @@ function filterView(text) {
         clearTimeout(searchCache.timers.pop());
     }
 
+    let searchProgress = document.getElementById("searchProgress");
+    searchProgress.max = document.querySelectorAll("#viewer > .container").length;
+
     for (let chunk = 0; chunk < Math.ceil(elems.length / SEARCH_CHUNKS); chunk++) {
         let timer = setTimeout((function(start) {
             return function() {
@@ -264,20 +267,21 @@ function filterView(text) {
                 for (let i = start; i < limit; i++) {
                     let current = elems[i];
 
-                    if (current.tagName === "H2") {
-                        continue;
-                    }
-
                     if (containsText(current, text)) {
                         current.classList.remove("hidden");
                         highlight(current, text);
                     } else {
                         current.classList.add("hidden");
                     }
+
+                    if (i % 5 == 0) {
+                        searchProgress.value = i;
+                    }
                 }
 
                 if (finalChunk) {
                     updateCount();
+                    searchProgress.value = 0;
                 }
             }
         })(chunk * SEARCH_CHUNKS), chunk * SEARCH_TIMEOUT);
