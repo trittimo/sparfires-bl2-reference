@@ -70,7 +70,7 @@ function Get-ImageWithRetries
         }
       } catch {
         $triesLeft = $MaxRetry - $i
-        Write-Host "Failed to download image... Trying $triesLeft times"
+        Write-Host "Failed to download image... Will try to download $triesLeft more times"
       } finally {
         if ($i -eq $MaxRetry) {
           Write-Host "Could not download image: $Url!"
@@ -158,15 +158,10 @@ $urls = @(
   "https://imgur.com/gallery/r6A3K"
 )
 
-
-$OUTPUT_DIRECTORY = "output_img"
-
-New-Item -Path $OUTPUT_DIRECTORY -ItemType "Directory" | Out-Null
+$albums = @()
 
 foreach ($url in $urls) {
-  $album = Get-ImgurAlbum $url -DownloadImages
-  $path = ($album[0].album + ".json") | Remove-InvalidFileNameChars
-  $path = $path -replace "\s+", "_"
-  $path = "$OUTPUT_DIRECTORY/$path"
-  ConvertTo-Json $album | Set-Content -Path $path
+  $albums += Get-ImgurAlbum $url
 }
+
+ConvertTo-Json $albums | Set-Content -Path "download_without_images.json"

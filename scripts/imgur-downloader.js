@@ -110,9 +110,18 @@ function addDescription(desc, div) {
     div.appendChild(container);
 }
 
-function addItem(item) {
+function addItem(item, state) {
     let div = document.createElement("div");
     div.classList.add("container");
+
+    if (item["album"] != state["lastAlbum"]) {
+        state["lastAlbum"] = item["album"];
+        let album = document.createElement("h2");
+        album.innerText = item["album"];
+        div.appendChild(album);
+        let divider = document.createElement("hr");
+        div.appendChild(divider);
+    }
 
     if (item["title"]) {
         let title = document.createElement("h3");
@@ -135,16 +144,21 @@ function addItem(item) {
     viewer.appendChild(div);
 }
 
+function loadObject(items) {
+    let state = {lastAlbum: ""};
+    for (let i = 0; i < items.length; i++) {
+        addItem(items[i], state);
+    }
+
+    updateCount();
+}
+
 function handleFile(file) {
     let viewer = document.getElementById("viewer");
     viewer.innerHTML = "";
     return function(e) {
         let items = JSON.parse(e.target.result);
-        for (let i = 0; i < items.length; i++) {
-            addItem(items[i]);
-        }
-
-        updateCount();
+        loadObject(items);
     }
 }
 
@@ -172,4 +186,28 @@ function filterView(text) {
     }
 
     updateCount();
+}
+
+function loadJSON(path, success, error) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                if (success)
+                    success(JSON.parse(xhr.responseText));
+            } else {
+                if (error)
+                    error(xhr);
+            }
+        }
+    };
+    xhr.open("GET", path, true);
+    xhr.send();
+}
+
+function loadDefaultView() {
+    loadJSON("blob/sparfires_albums_minified.json", function(data) {
+        loadObject(data);
+    });
 }

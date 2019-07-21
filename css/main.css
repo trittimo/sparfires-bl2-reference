@@ -33,6 +33,31 @@ h3 {
   margin-bottom: 0rem;
 }
 
+h2 {
+  text-align: center;
+}
+
+hr { 
+  border: 0; 
+  height: 1px; 
+  background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0); 
+}
+
+/*hr {
+  width: 0%;
+  min-width: 20%;
+  max-width: 100%;
+  margin: 0 auto;
+  border: none;
+  border-bottom: 1px solid #666;
+  position: relative;
+  transition: box-shadow 200ms ease-in-out;
+  box-shadow: 0px 0px 0px 0px #f9f9f9;
+}
+*/
 img {
   width: 75%;
   height: auto;
