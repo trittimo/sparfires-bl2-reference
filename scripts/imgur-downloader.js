@@ -207,7 +207,6 @@ function filterView(text) {
                 if (limit > elems.length) {
                     limit = elems.length;
                 }
-                console.log(start + " to " + limit);
                 for (let i = start; i < limit; i++) {
                     let current = elems[i];
                     if (containsText(current, text)) {
