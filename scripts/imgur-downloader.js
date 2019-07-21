@@ -1,3 +1,7 @@
+// Do work in chunks of 50 to prevent browser freezing
+const SEARCH_CHUNKS = 50;
+let searchCache = {timers: []};
+
 function updateCount() {
     let elem = document.querySelector("#hiddenCount");
     let viewer = document.querySelector("#viewer");
@@ -152,6 +156,7 @@ function addItem(item, state) {
 }
 
 function loadObject(items) {
+    searchCache.dirty = true;
     let state = {lastAlbum: ""};
     for (let i = 0; i < items.length; i++) {
         addItem(items[i], state);
@@ -184,14 +189,37 @@ function containsText(elem, text) {
 }
 
 function filterView(text) {
-    let elems = document.querySelectorAll(".container");
-    for (let i = 0; i < elems.length; i++) {
-        let current = elems[i];
-        if (containsText(current, text)) {
-            current.classList.remove("hidden");
-        } else {
-            current.classList.add("hidden");
-        }
+    let elems = searchCache.elems;
+    if (searchCache.dirty) {
+        elems = document.querySelectorAll(".container");
+        searchCache.elems = elems;
+        searchCache.dirty = false;
+    }
+
+    while (searchCache.timers.length > 0) {
+        clearTimeout(searchCache.timers.pop());
+    }
+
+    for (let chunk = 0; chunk < Math.ceil(elems.length / SEARCH_CHUNKS); chunk++) {
+        let timer = setTimeout((function(start) {
+            return function() {
+                let limit = start + SEARCH_CHUNKS;
+                if (limit > elems.length) {
+                    limit = elems.length;
+                }
+                console.log(start + " to " + limit);
+                for (let i = start; i < limit; i++) {
+                    let current = elems[i];
+                    if (containsText(current, text)) {
+                        current.classList.remove("hidden");
+                    } else {
+                        current.classList.add("hidden");
+                    }
+                }
+            }
+        })(chunk * SEARCH_CHUNKS), chunk * 100);
+
+        searchCache.timers.push(timer);
     }
 
     updateCount();
