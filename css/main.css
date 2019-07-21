@@ -1,0 +1,91 @@
+/* Style the button that is used to open and close the collapsible content */
+.collapsible {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.hidden {
+  display: none;
+  overflow: hidden;
+}
+
+.container {
+  background-color: #eee;
+  margin: 0;
+  padding: 2rem;
+}
+
+img {
+  width: 100%;
+  height: auto;
+}
+
+body {
+  max-width: 90rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
+  font: 1rem/1.5 "PT Sans", Arial, sans-serif;
+  color: #454545;
+  line-height: 1.4;
+  text-align: justify;
+  white-space: nowrap;
+}
+
+.file, .file-custom, .file-custom:before {
+  height: 1.25rem;
+  vertical-align: top;
+}
+
+.file-custom:after {
+  content: "Open album";
+}
+
+#filter {
+  float: right;
+  min-width: 60rem;
+}
+
+#controls-container {
+  background-color: #eee;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+input[type="text"] {
+  height: 1.25rem;
+  padding: .5rem 1rem;
+  border: .075rem solid #ddd;
+  border-radius: .25rem;
+  color: #555;
+  box-shadow: inset 0 .2rem .4rem rgba(0,0,0,.05);
+  line-height: 1.5;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+#content {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+}
+
+label,
+input,
+select,
+button {
+  font: 1rem/1.5 "Helvetica Neue", Arial, sans-serif;
+}
