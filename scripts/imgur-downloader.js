@@ -1,5 +1,10 @@
 // Do work in chunks of 50 to prevent browser freezing
 const SEARCH_CHUNKS = 50;
+
+// How long to timeout before the next chunk is checked
+const SEARCH_TIMEOUT = 175;
+
+// Just a cache so we aren't unnecessarily querying
 let searchCache = {timers: [], highlight: []};
 
 function updateCount() {
@@ -18,17 +23,19 @@ function updateCount() {
 }
 
 function loadView(files) {
-    if (!document.querySelector(".loader")) {
+    if (!document.querySelector(".loader") && files.length > 0) {
         let progress = document.createElement("div");
         progress.classList.add("loader");
-
-        document.querySelector(".hidden").after(progress);
+        document.querySelector("#hiddenCount").after(progress);
     }
 
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         let reader = new FileReader();
         reader.onload = handleFile(file);
+        reader.onabort = function() {
+            document.querySelector(".loader").remove();
+        }
         reader.readAsText(file);
     }
 }
@@ -140,15 +147,16 @@ function addDescription(desc, div) {
 
 function addItem(item, state) {
     let div = document.createElement("div");
+    let viewer = document.getElementById("viewer");
     div.classList.add("container");
 
     if (item["album"] != state["lastAlbum"]) {
         state["lastAlbum"] = item["album"];
         let album = document.createElement("h2");
         album.innerText = item["album"];
-        div.appendChild(album);
+        viewer.appendChild(album);
         let divider = document.createElement("hr");
-        div.appendChild(divider);
+        viewer.appendChild(divider);
     }
 
     if (item["title"]) {
@@ -168,7 +176,6 @@ function addItem(item, state) {
         addDescription(item["description"], div);
     }
 
-    let viewer = document.getElementById("viewer");
     viewer.appendChild(div);
 }
 
@@ -179,14 +186,18 @@ function loadObject(items) {
         addItem(items[i], state);
     }
 
-    document.querySelector(".loader").remove();
+    let loader = document.querySelector(".loader");
+    if (loader) {
+        loader.remove();
+    }
 
     updateCount();
 }
 
 function handleFile(file) {
     let viewer = document.getElementById("viewer");
-    viewer.innerHTML = "";
+    // Put this back to overwrite files
+    // viewer.innerHTML = "";
     return function(e) {
         let items = JSON.parse(e.target.result);
         loadObject(items);
@@ -218,8 +229,6 @@ function highlight(parent, search) {
     let elems = parent.querySelectorAll(".codecontainer > span");
     search = search.toLowerCase();
 
-    unhighlight(search);
-
     for (let i = 0; i < elems.length; i++) {
         let elem = elems[i];
         if (elem.innerText.toLowerCase().indexOf(search) > -1) {
@@ -227,6 +236,8 @@ function highlight(parent, search) {
             elem.classList.add("highlight");
         }
     }
+
+    unhighlight(search);
 }
 
 function filterView(text) {
@@ -252,6 +263,11 @@ function filterView(text) {
                 }
                 for (let i = start; i < limit; i++) {
                     let current = elems[i];
+
+                    if (current.tagName === "H2") {
+                        continue;
+                    }
+
                     if (containsText(current, text)) {
                         current.classList.remove("hidden");
                         highlight(current, text);
@@ -264,7 +280,7 @@ function filterView(text) {
                     updateCount();
                 }
             }
-        })(chunk * SEARCH_CHUNKS), chunk * 100);
+        })(chunk * SEARCH_CHUNKS), chunk * SEARCH_TIMEOUT);
 
         searchCache.timers.push(timer);
     }

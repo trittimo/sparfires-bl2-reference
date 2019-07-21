@@ -14,7 +14,7 @@
             <h1>Sparfires' BL2 Item Reference</h1>
             <div id="controls-container">
                 <label class="file">
-                    <input id="files" type="file" onchange="loadView(this.files)">
+                    <input multiple="true" id="files" type="file" onchange="loadView(this.files)">
                     <span class="file-custom"/>
                 </label>
                 <input type="text" value="Filter" id="filter" onclick="selectFilter(this)" oninput="filterView(this.value)">
