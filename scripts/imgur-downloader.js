@@ -1,6 +1,6 @@
 // Do work in chunks of 50 to prevent browser freezing
 const SEARCH_CHUNKS = 50;
-let searchCache = {timers: []};
+let searchCache = {timers: [], highlight: []};
 
 function updateCount() {
     let elem = document.querySelector("#hiddenCount");
@@ -90,13 +90,20 @@ function addDescription(desc, div) {
     let split = desc.split(/(BL2\(.+?\))/g);
     let container = document.createElement("div");
     container.classList.add("codecontainer");
+    let stack = [];
     for (let i = 0; i < split.length; i++) {
         let item = split[i];
-
-        if (!item) {
-            continue;
+        let newlines = item.split(/(\n)/g);
+        for (let j = 0; j < newlines.length; j++) {
+            stack.push(newlines[j]);
         }
-        //item = item.replace("\\n", "<br>");
+    }
+
+    let noBr = true;
+    for (let i = 0; i < stack.length; i++) {
+        let item = stack[i];
+
+        item = item.trim();
 
         if (item.startsWith("BL2(")) {
             let pre = document.createElement("pre");
@@ -110,11 +117,21 @@ function addDescription(desc, div) {
             pre.onmousedown = onMouseDown(pre);
 
             container.appendChild(pre);
+            noBr = false;
+        } else if (!item) {
+            if (noBr) {
+                noBr = false;
+            } else {
+                let br = document.createElement("br");
+                container.appendChild(br);
+                noBr = true;
+            }
         } else {
             let text = document.createElement("span");
             text.classList.add("bl2desc");
             text.innerText = item;
             container.appendChild(text);
+            noBr = false;
         }
     }
 
@@ -188,6 +205,30 @@ function containsText(elem, text) {
     return elem.innerText.toLowerCase().indexOf(text.toLowerCase()) > -1;
 }
 
+function unhighlight(search) {
+    while (searchCache.highlight.length > 0) {
+        let elem = searchCache.highlight.pop();
+        if (!search || elem.innerText.toLowerCase().indexOf(search) === -1) {
+            elem.classList.remove("highlight");
+        }
+    }
+}
+
+function highlight(parent, search) {
+    let elems = parent.querySelectorAll(".codecontainer > span");
+    search = search.toLowerCase();
+
+    unhighlight(search);
+
+    for (let i = 0; i < elems.length; i++) {
+        let elem = elems[i];
+        if (elem.innerText.toLowerCase().indexOf(search) > -1) {
+            searchCache.highlight.push(elem);
+            elem.classList.add("highlight");
+        }
+    }
+}
+
 function filterView(text) {
     let elems = searchCache.elems;
     if (searchCache.dirty) {
@@ -204,24 +245,29 @@ function filterView(text) {
         let timer = setTimeout((function(start) {
             return function() {
                 let limit = start + SEARCH_CHUNKS;
-                if (limit > elems.length) {
+                let finalChunk = false;
+                if (limit >= elems.length) {
                     limit = elems.length;
+                    finalChunk = true;
                 }
                 for (let i = start; i < limit; i++) {
                     let current = elems[i];
                     if (containsText(current, text)) {
                         current.classList.remove("hidden");
+                        highlight(current, text);
                     } else {
                         current.classList.add("hidden");
                     }
+                }
+
+                if (finalChunk) {
+                    updateCount();
                 }
             }
         })(chunk * SEARCH_CHUNKS), chunk * 100);
 
         searchCache.timers.push(timer);
     }
-
-    updateCount();
 }
 
 function loadJSON(path, success, error) {
