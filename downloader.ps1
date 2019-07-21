@@ -135,7 +135,6 @@ function Get-ImgurAlbum
 }
 
 $urls = @(
-  "https://imgur.com/gallery/H8CQu",
   "https://imgur.com/gallery/8zYdu",
   "https://imgur.com/gallery/5ssrM",
   "https://imgur.com/gallery/f5DNF",
@@ -155,7 +154,8 @@ $urls = @(
   "https://imgur.com/gallery/6fQ1P",
   "https://imgur.com/gallery/QLR5Z",
   "https://imgur.com/gallery/zrEdw",
-  "https://imgur.com/gallery/r6A3K"
+  "https://imgur.com/gallery/r6A3K",
+  "https://imgur.com/gallery/IE53Z"
 )
 
 $albums = @()
@@ -164,4 +164,4 @@ foreach ($url in $urls) {
   $albums += Get-ImgurAlbum $url
 }
 
-ConvertTo-Json $albums | Set-Content -Path "download_without_images.json"
+ConvertTo-Json $albums | Set-Content -Path "blob/download_without_images.json"
