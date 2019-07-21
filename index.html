@@ -15,8 +15,9 @@
                     <input id="files" type="file" onchange="loadView(this.files)">
                     <span class="file-custom"/>
                 </label>
-                <input type="text" value="Filter" id="filter">
+                <input type="text" value="Filter" id="filter" onclick="selectFilter(this)" oninput="filterView(this.value)">
             </div>
+            <p class="hidden" id="hiddenCount"/>
             <div id="viewer"/>
         </div>
     </body>
