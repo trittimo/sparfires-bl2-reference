@@ -3,7 +3,7 @@
     <head>
         <link rel="stylesheet" href="css/wtf-forms.css">
         <link rel="stylesheet" href="css/main.css">
-        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic|PT+Mono&amp;subset=latin,cyrillic">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic|PT+Mono&amp;subset=latin,cyrillic">
 
         <title>Imgur Album Viewer</title>
         <script type="text/javascript" src="scripts/imgur-downloader.js"></script>
@@ -11,6 +11,7 @@
     </head>
     <body onload="loadDefaultView()">
         <div id="content" class="controls-inline">
+            <h1>Sparfires' BL2 Item Reference</h1>
             <div id="controls-container">
                 <label class="file">
                     <input id="files" type="file" onchange="loadView(this.files)">
@@ -19,7 +20,8 @@
                 <input type="text" value="Filter" id="filter" onclick="selectFilter(this)" oninput="filterView(this.value)">
             </div>
             <p class="hidden" id="hiddenCount"/>
-            <div id="viewer"/>
+            <div class="loader"></div>
+            <div id="viewer"></div>
         </div>
     </body>
 </html>

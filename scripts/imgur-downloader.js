@@ -14,6 +14,13 @@ function updateCount() {
 }
 
 function loadView(files) {
+    if (!document.querySelector(".loader")) {
+        let progress = document.createElement("div");
+        progress.classList.add("loader");
+
+        document.querySelector(".hidden").after(progress);
+    }
+
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         let reader = new FileReader();
@@ -149,6 +156,8 @@ function loadObject(items) {
     for (let i = 0; i < items.length; i++) {
         addItem(items[i], state);
     }
+
+    document.querySelector(".loader").remove();
 
     updateCount();
 }
